@@ -1,0 +1,20 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for Views order form.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function viewsorderform_install() {
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function viewsorderform_uninstall() {
+  // Delete our module's variable from the variables table.
+  variable_del('viewsorderform_mail');
+}

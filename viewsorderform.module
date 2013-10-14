@@ -1,0 +1,108 @@
+<?php
+/**
+ * @file
+ * Views order form.
+ */
+
+/**
+* Implements hook_views_api().
+*/
+function viewsorderform_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'viewsorderform') . '/views',
+  );
+}
+
+
+/**
+ * Implements hook_help().
+ */
+function github_connect_help($path, $arg) {
+  switch ($path) {
+    case 'admin/structure/views/settings/viewsorderform':
+      return t('Turn any view into an order form.');
+  }
+}
+
+
+/**
+ * Implements hook_menu().
+ */
+function viewsorderform_menu() {
+  // Admin settings page.
+  $items['admin/structure/views/settings/viewsorderform'] = array(
+    'title' => 'Views order form settings',
+    'description' => 'Turn any view into an order form.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('viewsorderform_admin_settings_form'),
+    'access arguments' => array('administer viewsorderform'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'viewsorderform.admin.inc',
+  );
+  $items['confirm-order'] = array(
+    'title' => 'Confirm order',
+    'page callback' => 'viewsorderform_confirmation',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'viewsorderform.confirm.inc',
+  );
+
+  return $items;
+}
+
+
+
+/**
+ * Implements hook_mail().
+ */
+function viewsorderform_mail($key, &$message, $params) {
+  switch ($key) {
+    case 'viewsorderform_order':
+      $message['subject'] = t('New order at !site_name', array('!site_name' => variable_get('site_name')));
+      // @TODO Add optional text from admin.
+      $message['body'][] = t('Your order:');
+      foreach ($params['order'] as $item) {
+        $message['body'][] = $item;
+      }
+
+      // @TODO Set form elements in admin.
+      $message['body'][] = t('Contact information') . ': ';
+      $message['body'][] = t('Full name') . ': ' . $params['full_name'];
+      $message['body'][] = t('Telephone') . ': ' . $params['telephone'];
+      $message['body'][] = t('Email') . ': ' . $params['email'];
+      $message['body'][] = t('Street') . ': ' . $params['street'];
+      $message['body'][] = t('Zip code') . ': ' . $params['zip_code'];
+      $message['body'][] = t('City') . ': ' . $params['city'];
+      $message['body'][] = t('Country') . ': ' . $params['country'];
+      $message['body'][] = t('Message') . ': ' . $params['message'];
+      break;
+  }
+}
+
+
+/**
+ * Implements hook_form_alter().
+ */
+function viewsorderform_form_alter(&$form, &$form_state, $form_id) {
+  // Needed since the second step skips validation.
+  // @TODO set $form_id based on view name.
+  // @TODO Better not handle this with form alter.
+  if ($form_id == 'views_form_order_articles_page') {
+    if (!isset($form_state['storage']['confirm']) || empty($form_state['storage']['confirm'])) {
+      unset($form['actions']['submit']);
+    }
+    else {
+      $form['actions']['submit']['#value'] = t('Send');
+      $form['#validate'] = array('viewsorderform_order_validation');
+      $form_state['rebuild'] = TRUE;
+    }
+  }
+}
+
+
+function viewsorderform_order_validation($form, &$form_state) {
+  if (isset($form_state['values']['email']) && !valid_email_address($form_state['values']['email'])) {
+    form_set_error('email', t('You must enter a valid e-mail address.'));
+  }
+}

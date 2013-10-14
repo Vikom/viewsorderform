@@ -1,0 +1,10 @@
+name = Views order form
+description = Turn a view into an order form
+core = 7.x
+package = Views
+version = 7.x-1.0
+project = viewsorderform
+configure = admin/structure/views/settings/viewsorderform
+dependencies[] = views
+files[] = views/viewsorderform_handler_field_viewsorderform.inc
+files[] = viewsorderform.confirm.inc
