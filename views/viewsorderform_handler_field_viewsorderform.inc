@@ -88,6 +88,8 @@ class viewsorderform_handler_field_viewsorderform extends views_handler_field {
       // The ordered items.
       $order = viewsorderform_order($form_state);
       $form['#suffix'] = $order;
+
+      $form['#action'] = '/literature';
     }
 
     else {
@@ -110,6 +112,7 @@ class viewsorderform_handler_field_viewsorderform extends views_handler_field {
           '#value' => 'Request order',
         );
       }
+      $form['#action'] = '/literature';
     }
   }
 
@@ -147,7 +150,7 @@ class viewsorderform_handler_field_viewsorderform extends views_handler_field {
 
       // Send order by mail.
       if (!empty($order)) {
-        $to = variable_get('viewsorderform_mail');
+        $to = 'viktor.miranda@symbio.com';
         $params = array(
           'order' => $order,
           'full_name' => $form_state['values']['full_name'],
@@ -164,7 +167,7 @@ class viewsorderform_handler_field_viewsorderform extends views_handler_field {
         drupal_mail('viewsorderform', 'viewsorderform_order', $to, language_default(), $params, $from);
 
         // Redirect to confirmation page.
-        drupal_goto('confirm-order');
+        drupal_goto('literature/confirmation');
       }
     }
   }
@@ -176,7 +179,10 @@ function viewsorderform_order($form_state) {
   $output .= '<ul>';
   foreach ($form_state['values']['viewsorderform'] as $key => $value) {
     if ($value === 1) {
-      $output .= '<li>' . $form_state['build_info']['args'][0]->result[$key]->node_title . '</li>';
+      $image = $form_state['build_info']['args'][0]->result[$key]->field_field_literature_image[0]['rendered'];
+      $output .= '<li>';
+      $output .= drupal_render($image);
+      $output .= $form_state['build_info']['args'][0]->result[$key]->node_title . '</li>';
     }
   }
   $output .= '</ul></aside>';
