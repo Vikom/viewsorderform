@@ -2,6 +2,7 @@
 /**
  * @file
  * Views order form.
+ * @author Vikom (drupal.org/user/279158)
  */
 
 /**
@@ -86,9 +87,8 @@ function viewsorderform_mail($key, &$message, $params) {
  */
 function viewsorderform_form_alter(&$form, &$form_state, $form_id) {
   // Needed since the second step skips validation.
-  // @TODO set $form_id based on view name.
   // @TODO Better not handle this with form alter.
-  if ($form_id == 'views_form_order_articles_page') {
+  if (isset($form['viewsorderform'])) {
     if (!isset($form_state['storage']['confirm']) || empty($form_state['storage']['confirm'])) {
       unset($form['actions']['submit']);
     }
