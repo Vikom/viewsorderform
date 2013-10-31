@@ -87,6 +87,7 @@ class viewsorderform_handler_field_viewsorderform extends views_handler_field {
 
       // The ordered items.
       $order = viewsorderform_order($form_state);
+      $form['#attributes']['class'] = array('confirm-step');
       $form['#suffix'] = $order;
 
       $form['#action'] = '/literature';
