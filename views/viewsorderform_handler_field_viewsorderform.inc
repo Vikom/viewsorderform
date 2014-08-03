@@ -151,7 +151,7 @@ class viewsorderform_handler_field_viewsorderform extends views_handler_field {
 
       // Send order by mail.
       if (!empty($order)) {
-        $to = 'viktor.miranda@symbio.com';
+        $to = variable_get('viewsorderform_mail');
         $params = array(
           'order' => $order,
           'full_name' => $form_state['values']['full_name'],
